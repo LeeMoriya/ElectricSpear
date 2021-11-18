@@ -16,6 +16,6 @@ public class ElectricSpearPlugin : BaseUnityPlugin
 
     public void OnEnable()
     {
-        
+
     }
 }

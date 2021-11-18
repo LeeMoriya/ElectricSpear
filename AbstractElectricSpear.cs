@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESFisobs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ public class AbstractElectricSpear : AbstractPhysicalObject
     public bool stuckVertically;
     public int charge;
 
-    public AbstractElectricSpear(World world, ElectricSpear realizedObject, WorldCoordinate pos, EntityID ID, int charge) : base(world, (AbstractPhysicalObject.AbstractObjectType)31, realizedObject, pos, ID)
+    public AbstractElectricSpear(World world, ElectricSpear realizedObject, WorldCoordinate pos, EntityID ID, int charge) : base(world, ElectricSpearFisob.Instance.Type, realizedObject, pos, ID)
     {
         this.charge = charge;
     }
@@ -20,6 +21,12 @@ public class AbstractElectricSpear : AbstractPhysicalObject
         {
             return this.stuckInWallCycles != 0;
         }
+    }
+
+    public override void Realize()
+    {
+        realizedObject ??= new ElectricSpear(this, this.world);
+        base.Realize();
     }
 
     public void StuckInWallTick(int ticks)
@@ -36,23 +43,6 @@ public class AbstractElectricSpear : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return string.Concat(new object[]
-        {
-                this.ID.ToString(),
-                "<oA>",
-                this.type.ToString(),
-                "<oA>",
-                this.pos.room,
-                ".",
-                this.pos.x,
-                ".",
-                this.pos.y,
-                ".",
-                this.pos.abstractNode,
-                "<oA>",
-                this.stuckInWallCycles.ToString(),
-                "<oA>",
-                this.charge
-        });
+        return this.SaveToString($"{charge};");
     }
 }

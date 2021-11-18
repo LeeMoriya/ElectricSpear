@@ -14,7 +14,6 @@ public class ElectricSpear : Spear
     private new int stuckInChunkIndex;
     private bool charged;
     private bool depleted;
-    private float conRad = 7f;
     private new int stuckBodyPart;
     private new bool spinning;
     protected new bool pivotAtTip;
@@ -29,8 +28,9 @@ public class ElectricSpear : Spear
     public LightSource lightSource;
     public float lightFlash;
 
-    public ElectricSpear(AbstractPhysicalObject abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)
+    public ElectricSpear(AbstractElectricSpear abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)
     {
+        this.abstractPhysicalObject = abstractPhysicalObject;
         base.bodyChunks = new BodyChunk[1];
         base.bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
         this.bodyChunkConnections = new PhysicalObject.BodyChunkConnection[0];

@@ -32,19 +32,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>E:\Games\Rain World\Mods\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>E:\Games\Rain World\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="EnumExtender">
-      <HintPath>E:\Games\Rain World\Mods\EnumExtender.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\EnumExtender.dll</HintPath>
     </Reference>
     <Reference Include="HOOKS-Assembly-CSharp">
-      <HintPath>E:\Games\Rain World\Mods\HOOKS-Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\HOOKS-Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Partiality">
-      <HintPath>E:\Games\Rain World\BepInEx\plugins\PartialityWrapper\Partiality.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\BepInEx\plugins\PartialityWrapper\Partiality.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,7 +53,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>E:\Games\Rain World\Mods\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

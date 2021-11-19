@@ -211,7 +211,7 @@ public class ElectricSpear : Spear
             {
                 if (result.obj is Centipede)
                 {
-                    if (this.charge != 3)
+                    if (this.charge != 3 && !(result.obj as Centipede).dead)
                     {
                         (result.obj as Creature).Violence(base.firstChunk, new Vector2?(base.firstChunk.vel * base.firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, this.spearDamageBonus, 20f);
                         this.charged = true;
@@ -262,6 +262,10 @@ public class ElectricSpear : Spear
                     this.room.PlaySound(SoundID.Centipede_Shock, base.firstChunk);
                     int charge = this.charge;
                     this.charge = charge - 1;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        this.room.AddObject(new Spark(this.firstChunk.pos, Custom.RNV() * 5, new Color(0.9f, 1f, 1f), null, 50, 90));
+                    }
                 }
                 if (this.charged)
                 {
@@ -530,15 +534,12 @@ public class ElectricSpear : Spear
 
     public override void PlaceInRoom(Room placeRoom)
     {
-        Debug.Log("1 Place in room");
         base.PlaceInRoom(placeRoom);
-        Debug.Log("2 Place in room");
         if (base.abstractSpear.stuckInWall)
         {
             this.stuckInWall = new Vector2?(placeRoom.MiddleOfTile(this.abstractPhysicalObject.pos.Tile));
             this.ChangeMode(Weapon.Mode.StuckInWall);
         }
-        Debug.Log("3 Place in room");
     }
 
     public override void ChangeMode(Weapon.Mode newMode)

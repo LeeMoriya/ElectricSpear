@@ -35,14 +35,7 @@ public sealed class ElectricSpearFisob : Fisob
 
         public override void GetGrabability(Player player, ref Player.ObjectGrabability grabability)
         {
-            if (player.grasps.Any(g => g?.grabbed is ElectricSpear))
-            {
-                grabability = Player.ObjectGrabability.CantGrab;
-            }
-            else
-            {
-                grabability = Player.ObjectGrabability.OneHand;
-            }
+            grabability = Player.ObjectGrabability.BigOneHand;
         }
     }
 }

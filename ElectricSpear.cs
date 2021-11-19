@@ -530,15 +530,12 @@ public class ElectricSpear : Spear
 
     public override void PlaceInRoom(Room placeRoom)
     {
-        Debug.Log("1 Place in room");
         base.PlaceInRoom(placeRoom);
-        Debug.Log("2 Place in room");
         if (base.abstractSpear.stuckInWall)
         {
             this.stuckInWall = new Vector2?(placeRoom.MiddleOfTile(this.abstractPhysicalObject.pos.Tile));
             this.ChangeMode(Weapon.Mode.StuckInWall);
         }
-        Debug.Log("3 Place in room");
     }
 
     public override void ChangeMode(Weapon.Mode newMode)

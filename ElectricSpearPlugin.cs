@@ -12,6 +12,11 @@ using RWCustom;
 public class ElectricSpearPlugin : BaseUnityPlugin
 {
     public static BaseUnityPlugin instance;
+    public string updateURL = "http://beestuff.pythonanywhere.com/audb/api/mods/4/8";
+    public int version = 0;
+    public string keyE = "AQAB";
+    public string keyN = "lDaM5h0hJUvZcIdiWXH4qfdia/V8UWzikqRIiC9jVGA87jMrafo4EWOTk0MMIQZWHVy+msVzvEAVR3V45wZShFu7ylUndroL5u4zyqHfVeAeDIALfBrM3J4BIM1rMi4wieYdLIF6t2Uj4GVH7iU59AIfobew1vICUILu9Zib/Aw2QY6Nc+0Cz6Lw3xh7DL/trIMaW7yQfYRZUaEZBHelN2JGyUjKkbby4vL6gySfGlVl1OH0hYYhrhNwnQrOow8WXFMIu/WyTA3cY3wqkjd4/WRJ+EvYtMKTwfG+TZiHGst9Bg1ZTFfvEvrTFiPadTf19iUnfyL/QJaTAD8qe+rba5KwirIElovqFpYNH9tAr7SpjixjbT3Igmz+SlqGa9wSbm1QWt/76QqpyAYV/b5G/VzbytoZrhkEVdGuaotD4tXh462AhK5xoigB8PEt+T3nWuPdoZlVo5hRCxoNleH4yxLpVv8C7TpQgQHDqzHMcEX79xjiYiCvigCq7lLEdxUD0fhnxSYVK0O+y7T+NXkk3is/XqJxdesgyYUMT81MSou9Ur/2nv9H8IvA9QeIqso05hK3c496UOaRJS27WJhrxABtU+HHtxo9SifmXjisDj3IV46uTeVp5bivDTu1yBymgnU8qli/xmwWxKvOisi9ZOZsg4vFHaY31gdUBWOz4dU=";
+
     public ElectricSpearPlugin()
     {
         instance = this;
@@ -60,6 +65,7 @@ public class ElectricSpearPlugin : BaseUnityPlugin
     private void SandboxEditorSelector_ctor(On.Menu.SandboxEditorSelector.orig_ctor orig, SandboxEditorSelector self, Menu.Menu menu, MenuObject owner, SandboxOverlayOwner overlayOwner)
     {
         orig.Invoke(self, menu, owner, overlayOwner);
+        //Offset by two to account for two empty spaces after Clear All button
         int num = MultiplayerUnlocks.ItemsUnlocks + 2;
         self.AddButton(new SandboxEditorSelector.CreatureOrItemButton(menu, self, MultiplayerUnlocks.SymbolDataForSandboxUnlock(EnumExt_ElectricSpearArena.electric_spear)), ref num);
         for (int w = 0; w < SandboxEditorSelector.Width; w++)
@@ -76,6 +82,7 @@ public class ElectricSpearPlugin : BaseUnityPlugin
 
     private bool MultiplayerUnlocks_SandboxItemUnlocked(On.MultiplayerUnlocks.orig_SandboxItemUnlocked orig, MultiplayerUnlocks self, MultiplayerUnlocks.SandboxUnlockID unlockID)
     {
+        //Unlock Electric Spear by default
         if(unlockID == EnumExt_ElectricSpearArena.electric_spear)
         {
             return true;
@@ -111,10 +118,8 @@ public class ElectricSpearPlugin : BaseUnityPlugin
     private void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
         orig.Invoke(self, eu);
-
         if(self != null && Input.GetKeyDown(KeyCode.Alpha9))
         {
-            Debug.Log("Gonna spawn an Electric Spear");
             AbstractElectricSpear apo = new AbstractElectricSpear(self.room.world, null, self.abstractCreature.pos, self.room.game.GetNewID(), 3);
             self.room.abstractRoom.AddEntity(apo as AbstractElectricSpear);
             (apo as AbstractElectricSpear).RealizeInRoom();

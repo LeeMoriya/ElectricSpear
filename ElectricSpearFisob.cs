@@ -9,6 +9,7 @@ public sealed class ElectricSpearFisob : Fisob
     public static readonly ElectricSpearFisob Instance = new();
 
     private ElectricSpearFisob() : base("electric_spear") { }
+    private static readonly ElectricSpearProperties properties = new();
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData)
     {
@@ -22,7 +23,7 @@ public sealed class ElectricSpearFisob : Fisob
 
     public override FisobProperties GetProperties(PhysicalObject forObject)
     {
-        return new ElectricSpearProperties();
+        return properties;
     }
 
     private sealed class ElectricSpearProperties : FisobProperties
@@ -31,6 +32,9 @@ public sealed class ElectricSpearFisob : Fisob
             => throwable = true;
 
         public override void GetScavCollectibleScore(Scavenger scavenger, ref int score)
+            => score = 3;
+
+        public override void GetScavWeaponPickupScore(Scavenger scavenger, ref int score)
             => score = 3;
 
         public override void GetGrabability(Player player, ref Player.ObjectGrabability grabability)

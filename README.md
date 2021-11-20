@@ -8,10 +8,11 @@ The spear is also unlocked by default in Sandbox mode.
 
 ## Requirements
 EnumExtender is required
+
 This mod also supports AutoUpdate
 
 ## Download
-Download the latest version of Electric Spear [here]()
+Download the latest version of Electric Spear [here](https://github.com/LeeMoriya/ElectricSpear/releases/tag/v1.0)
 
 ## Credits
 Shiro_PB for creating the original version of Electric Spear

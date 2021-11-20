@@ -7,9 +7,9 @@ The spears are highly coveted by the Scavengers and can be found in their hidden
 The spear is also unlocked by default in Sandbox mode.
 
 ## Requirements
-EnumExtender is required
+This mod requires [EnumExtender](https://beestuff.pythonanywhere.com/audb/api/mods/0/1/download/latest)
 
-This mod also supports AutoUpdate
+This mod supports [AutoUpdate](https://beestuff.pythonanywhere.com/audb/api/mods/0/0/download/latest)
 
 ## Download
 Download the latest version of Electric Spear [here](https://github.com/LeeMoriya/ElectricSpear/releases/tag/v1.0)

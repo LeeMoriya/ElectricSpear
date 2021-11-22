@@ -2,28 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using ESFisobs;
 
 public sealed class ElectricSpearFisob : Fisob
 {
     public static readonly ElectricSpearFisob Instance = new();
 
-    private ElectricSpearFisob() : base("electric_spear") { }
+    private ElectricSpearFisob() : base("electric_spear") 
+    { 
+        
+    }
     private static readonly ElectricSpearProperties properties = new();
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData)
     {
         string[] p = saveData.CustomData.Split(';');
+        if(world.GetAbstractRoom(saveData.Pos).shelter && ElectricSpearPlugin.recharge)
+        {
+            return new AbstractElectricSpear(world, null, saveData.Pos, saveData.ID, 3)
+            {
+                charge = 3
+            };
+        }
 
         return new AbstractElectricSpear(world, null, saveData.Pos, saveData.ID, 3)
         {
-            charge = int.Parse(p[0])
+            charge = int.TryParse(p[0], out var h) ? h : 3
         };
     }
 
     public override FisobProperties GetProperties(PhysicalObject forObject)
     {
         return properties;
+    }
+
+    public override SandboxState GetSandboxState(MultiplayerUnlocks unlocks)
+    {
+        return SandboxState.Unlocked;
     }
 
     private sealed class ElectricSpearProperties : FisobProperties

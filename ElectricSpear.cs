@@ -17,7 +17,7 @@ public class ElectricSpear : Spear
     private new int stuckBodyPart;
     private new bool spinning;
     protected new bool pivotAtTip;
-    public new PhysicalObject.Appendage.Pos stuckInAppendage;
+    public new Appendage.Pos stuckInAppendage;
     public new float stuckRotation;
     public new Vector2? stuckInWall;
     public new bool alwaysStickInWalls;
@@ -31,22 +31,22 @@ public class ElectricSpear : Spear
     public ElectricSpear(AbstractElectricSpear abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)
     {
         this.abstractPhysicalObject = abstractPhysicalObject;
-        base.bodyChunks = new BodyChunk[1];
-        base.bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
-        this.bodyChunkConnections = new PhysicalObject.BodyChunkConnection[0];
-        base.airFriction = 0.999f;
+        bodyChunks = new BodyChunk[1];
+        bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
+        bodyChunkConnections = new BodyChunkConnection[0];
+        airFriction = 0.999f;
         base.gravity = 0.9f;
-        this.bounce = 0.4f;
-        this.surfaceFriction = 0.4f;
-        this.collisionLayer = 2;
-        base.waterFriction = 0.98f;
-        base.buoyancy = 0.4f;
-        this.pivotAtTip = false;
-        this.lastPivotAtTip = false;
-        this.stuckBodyPart = -1;
-        base.firstChunk.loudness = 7f;
-        this.tailPos = base.firstChunk.pos;
-        this.soundLoop = new ChunkDynamicSoundLoop(base.firstChunk);
+        bounce = 0.4f;
+        surfaceFriction = 0.4f;
+        collisionLayer = 2;
+        waterFriction = 0.98f;
+        buoyancy = 0.4f;
+        pivotAtTip = false;
+        lastPivotAtTip = false;
+        stuckBodyPart = -1;
+        firstChunk.loudness = 7f;
+        tailPos = firstChunk.pos;
+        soundLoop = new ChunkDynamicSoundLoop(firstChunk);
     }
 
     public override bool HeavyWeapon
@@ -61,7 +61,7 @@ public class ElectricSpear : Spear
     {
         get
         {
-            return this.abstractPhysicalObject as AbstractElectricSpear;
+            return abstractPhysicalObject as AbstractElectricSpear;
         }
     }
 
@@ -69,7 +69,7 @@ public class ElectricSpear : Spear
     {
         get
         {
-            return this.stuckInObject.bodyChunks[this.stuckInChunkIndex];
+            return stuckInObject.bodyChunks[stuckInChunkIndex];
         }
     }
 
@@ -77,22 +77,22 @@ public class ElectricSpear : Spear
     {
         get
         {
-            return this.g * this.room.gravity;
+            return g * room.gravity;
         }
         protected set
         {
-            this.g = value;
+            g = value;
         }
     }
     public int charge
     {
         get
         {
-            return (this.abstractPhysicalObject as AbstractElectricSpear).charge;
+            return (abstractPhysicalObject as AbstractElectricSpear).charge;
         }
         set
         {
-            (this.abstractPhysicalObject as AbstractElectricSpear).charge = value;
+            (abstractPhysicalObject as AbstractElectricSpear).charge = value;
         }
     }
 
@@ -106,77 +106,77 @@ public class ElectricSpear : Spear
         sLeaser.sprites[2].scaleX = 2.3f;
         sLeaser.sprites[0] = new FSprite("pixel", true);
         sLeaser.sprites[0].scaleX = 2.3f;
-        this.AddToContainer(sLeaser, rCam, null);
+        AddToContainer(sLeaser, rCam, null);
     }
 
     public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
         base.ApplyPalette(sLeaser, rCam, palette);
-        sLeaser.sprites[3].color = this.color;
-        sLeaser.sprites[1].color = this.whiteColor;
+        sLeaser.sprites[3].color = color;
+        sLeaser.sprites[1].color = whiteColor;
         sLeaser.sprites[1].scale = 2f;
-        sLeaser.sprites[2].color = this.whiteColor;
+        sLeaser.sprites[2].color = whiteColor;
         sLeaser.sprites[2].scale = 2f;
-        sLeaser.sprites[0].color = this.redColor;
+        sLeaser.sprites[0].color = redColor;
         sLeaser.sprites[0].scale = 2f;
     }
 
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        Vector2 vector = Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker);
-        if (this.vibrate > 0)
+        Vector2 vector = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
+        if (vibrate > 0)
         {
             vector += Custom.DegToVec(Random.value * 360f) * 2f * Random.value;
         }
-        Vector3 v = Vector3.Slerp(this.lastRotation, this.rotation, timeStacker);
+        Vector3 v = Vector3.Slerp(lastRotation, rotation, timeStacker);
         for (int i = 3; i >= 0; i--)
         {
             sLeaser.sprites[i].x = vector.x - camPos.x;
             sLeaser.sprites[i].y = vector.y - camPos.y;
-            sLeaser.sprites[i].anchorY = Mathf.Lerp((!this.lastPivotAtTip) ? 0.5f : 0.85f, (!this.pivotAtTip) ? 0.5f : 0.85f, timeStacker);
+            sLeaser.sprites[i].anchorY = Mathf.Lerp(!lastPivotAtTip ? 0.5f : 0.85f, !pivotAtTip ? 0.5f : 0.85f, timeStacker);
             sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
         }
         sLeaser.sprites[1].anchorY += 10f;
         sLeaser.sprites[2].anchorY += 8f;
         sLeaser.sprites[0].anchorY += 6f;
-        if (this.blink > 0 && Random.value < 0.5f)
+        if (blink > 0 && Random.value < 0.5f)
         {
-            sLeaser.sprites[0].color = base.blinkColor;
-            sLeaser.sprites[1].color = base.blinkColor;
-            sLeaser.sprites[2].color = base.blinkColor;
-            sLeaser.sprites[3].color = base.blinkColor;
+            sLeaser.sprites[0].color = blinkColor;
+            sLeaser.sprites[1].color = blinkColor;
+            sLeaser.sprites[2].color = blinkColor;
+            sLeaser.sprites[3].color = blinkColor;
         }
         else
         {
-            switch (this.charge)
+            switch (charge)
             {
                 case 0:
-                    sLeaser.sprites[0].color = this.redColor;
-                    sLeaser.sprites[1].color = this.redColor;
-                    sLeaser.sprites[2].color = this.redColor;
-                    sLeaser.sprites[3].color = this.color;
+                    sLeaser.sprites[0].color = redColor;
+                    sLeaser.sprites[1].color = redColor;
+                    sLeaser.sprites[2].color = redColor;
+                    sLeaser.sprites[3].color = color;
                     break;
                 case 1:
-                    sLeaser.sprites[0].color = this.redColor;
-                    sLeaser.sprites[1].color = this.whiteColor;
-                    sLeaser.sprites[2].color = this.redColor;
-                    sLeaser.sprites[3].color = this.color;
+                    sLeaser.sprites[0].color = redColor;
+                    sLeaser.sprites[1].color = whiteColor;
+                    sLeaser.sprites[2].color = redColor;
+                    sLeaser.sprites[3].color = color;
                     break;
                 case 2:
-                    sLeaser.sprites[0].color = this.redColor;
-                    sLeaser.sprites[1].color = this.whiteColor;
-                    sLeaser.sprites[2].color = this.whiteColor;
-                    sLeaser.sprites[3].color = this.color;
+                    sLeaser.sprites[0].color = redColor;
+                    sLeaser.sprites[1].color = whiteColor;
+                    sLeaser.sprites[2].color = whiteColor;
+                    sLeaser.sprites[3].color = color;
                     break;
                 case 3:
-                    sLeaser.sprites[0].color = this.whiteColor;
-                    sLeaser.sprites[1].color = this.whiteColor;
-                    sLeaser.sprites[2].color = this.whiteColor;
-                    sLeaser.sprites[3].color = this.color;
+                    sLeaser.sprites[0].color = whiteColor;
+                    sLeaser.sprites[1].color = whiteColor;
+                    sLeaser.sprites[2].color = whiteColor;
+                    sLeaser.sprites[3].color = color;
                     break;
             }
         }
-        if (base.slatedForDeletetion || this.room != rCam.room)
+        if (slatedForDeletetion || room != rCam.room)
         {
             sLeaser.CleanSpritesAndRemove();
         }
@@ -192,7 +192,7 @@ public class ElectricSpear : Spear
         else
         {
             bool flag2 = false;
-            if (this.abstractPhysicalObject.world.game.IsArenaSession && this.abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && this.thrownBy != null && this.thrownBy is Player && result.obj is Creature)
+            if (abstractPhysicalObject.world.game.IsArenaSession && abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && thrownBy != null && thrownBy is Player && result.obj is Creature)
             {
                 flag2 = true;
                 if ((result.obj as Creature).State is HealthState && ((result.obj as Creature).State as HealthState).health <= 0f)
@@ -211,33 +211,33 @@ public class ElectricSpear : Spear
             {
                 if (result.obj is Centipede)
                 {
-                    if (this.charge != 3 && !(result.obj as Centipede).dead)
+                    if (charge != 3 && !(result.obj as Centipede).dead)
                     {
-                        (result.obj as Creature).Violence(base.firstChunk, new Vector2?(base.firstChunk.vel * base.firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, this.spearDamageBonus, 20f);
-                        this.charged = true;
-                        this.depleted = false;
+                        (result.obj as Creature).Violence(firstChunk, new Vector2?(firstChunk.vel * firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, spearDamageBonus, 20f);
+                        charged = true;
+                        depleted = false;
                     }
                     else
                     {
-                        (result.obj as Creature).Violence(base.firstChunk, new Vector2?(base.firstChunk.vel * base.firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, this.spearDamageBonus, 20f);
-                        this.charged = false;
-                        this.depleted = false;
+                        (result.obj as Creature).Violence(firstChunk, new Vector2?(firstChunk.vel * firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, spearDamageBonus, 20f);
+                        charged = false;
+                        depleted = false;
                     }
                 }
                 else
                 {
-                    if (this.charge != 0)
+                    if (charge != 0)
                     {
-                        (result.obj as Creature).Violence(base.firstChunk, new Vector2?(base.firstChunk.vel * base.firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, this.spearDamageBonus, 20f);
-                        (result.obj as Creature).Violence(base.firstChunk, new Vector2?(base.firstChunk.vel * base.firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Electric, 6f, 20f);
-                        this.charged = false;
-                        this.depleted = true;
+                        (result.obj as Creature).Violence(firstChunk, new Vector2?(firstChunk.vel * firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, spearDamageBonus, 20f);
+                        (result.obj as Creature).Violence(firstChunk, new Vector2?(firstChunk.vel * firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Electric, 6f, 20f);
+                        charged = false;
+                        depleted = true;
                     }
                     else
                     {
-                        (result.obj as Creature).Violence(base.firstChunk, new Vector2?(base.firstChunk.vel * base.firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, this.spearDamageBonus, 20f);
-                        this.charged = false;
-                        this.depleted = false;
+                        (result.obj as Creature).Violence(firstChunk, new Vector2?(firstChunk.vel * firstChunk.mass * 2f), result.chunk, result.onAppendagePos, Creature.DamageType.Stab, spearDamageBonus, 20f);
+                        charged = false;
+                        depleted = false;
                     }
                 }
             }
@@ -245,51 +245,51 @@ public class ElectricSpear : Spear
             {
                 if (result.chunk != null)
                 {
-                    result.chunk.vel += base.firstChunk.vel * base.firstChunk.mass / result.chunk.mass;
+                    result.chunk.vel += firstChunk.vel * firstChunk.mass / result.chunk.mass;
                 }
                 else
                 {
                     if (result.onAppendagePos != null)
                     {
-                        (result.obj as PhysicalObject.IHaveAppendages).ApplyForceOnAppendage(result.onAppendagePos, base.firstChunk.vel * base.firstChunk.mass);
+                        (result.obj as IHaveAppendages).ApplyForceOnAppendage(result.onAppendagePos, firstChunk.vel * firstChunk.mass);
                     }
                 }
             }
-            if (result.obj is Creature && (result.obj as Creature).SpearStick(this, Mathf.Lerp(0.55f, 0.62f, Random.value), result.chunk, result.onAppendagePos, base.firstChunk.vel))
+            if (result.obj is Creature && (result.obj as Creature).SpearStick(this, Mathf.Lerp(0.55f, 0.62f, Random.value), result.chunk, result.onAppendagePos, firstChunk.vel))
             {
-                if (this.depleted)
+                if (depleted)
                 {
-                    this.room.PlaySound(SoundID.Centipede_Shock, base.firstChunk);
+                    room.PlaySound(SoundID.Centipede_Shock, firstChunk);
                     int charge = this.charge;
                     this.charge = charge - 1;
                     for (int i = 0; i < 5; i++)
                     {
-                        this.room.AddObject(new Spark(this.firstChunk.pos, Custom.RNV() * 5, new Color(0.9f, 1f, 1f), null, 50, 90));
+                        room.AddObject(new Spark(firstChunk.pos, Custom.RNV() * 5, new Color(0.9f, 1f, 1f), null, 50, 90));
                     }
                 }
-                if (this.charged)
+                if (charged)
                 {
-                    this.room.PlaySound(SoundID.Centipede_Electric_Charge_LOOP, base.firstChunk);
+                    room.PlaySound(SoundID.Centipede_Electric_Charge_LOOP, firstChunk);
                     int charge = this.charge;
                     this.charge = charge + 1;
-                    this.charged = false;
+                    charged = false;
                 }
-                this.room.PlaySound(SoundID.Spear_Stick_In_Creature, base.firstChunk);
-                this.LodgeInCreature(result, eu);
-                this.lightFlash = 1.3f;
+                room.PlaySound(SoundID.Spear_Stick_In_Creature, firstChunk);
+                LodgeInCreature(result, eu);
+                lightFlash = 1.3f;
                 if (flag2)
                 {
-                    this.abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(this.thrownBy as Player, this.stuckInObject as Creature);
+                    abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(thrownBy as Player, stuckInObject as Creature);
                 }
                 result2 = true;
             }
             else
             {
-                this.room.PlaySound(SoundID.Spear_Bounce_Off_Creauture_Shell, base.firstChunk);
-                this.vibrate = 20;
-                this.ChangeMode(Weapon.Mode.Free);
-                base.firstChunk.vel = base.firstChunk.vel * -0.5f + Custom.DegToVec(Random.value * 360f) * Mathf.Lerp(0.1f, 0.4f, Random.value) * base.firstChunk.vel.magnitude;
-                this.SetRandomSpin();
+                room.PlaySound(SoundID.Spear_Bounce_Off_Creauture_Shell, firstChunk);
+                vibrate = 20;
+                ChangeMode(Mode.Free);
+                firstChunk.vel = firstChunk.vel * -0.5f + Custom.DegToVec(Random.value * 360f) * Mathf.Lerp(0.1f, 0.4f, Random.value) * firstChunk.vel.magnitude;
+                SetRandomSpin();
                 result2 = false;
             }
         }
@@ -299,91 +299,91 @@ public class ElectricSpear : Spear
     public override void Update(bool eu)
     {
         base.Update(eu);
-        this.soundLoop.sound = SoundID.None;
-        if (base.firstChunk.vel.magnitude > 5f)
+        soundLoop.sound = SoundID.None;
+        if (firstChunk.vel.magnitude > 5f)
         {
-            if (base.mode == Weapon.Mode.Thrown)
+            if (mode == Mode.Thrown)
             {
-                this.soundLoop.sound = SoundID.Spear_Thrown_Through_Air_LOOP;
+                soundLoop.sound = SoundID.Spear_Thrown_Through_Air_LOOP;
             }
             else
             {
-                if (base.mode == Weapon.Mode.Free)
+                if (mode == Mode.Free)
                 {
-                    this.soundLoop.sound = SoundID.Spear_Spinning_Through_Air_LOOP;
+                    soundLoop.sound = SoundID.Spear_Spinning_Through_Air_LOOP;
                 }
             }
-            this.soundLoop.Volume = Mathf.InverseLerp(5f, 15f, base.firstChunk.vel.magnitude);
+            soundLoop.Volume = Mathf.InverseLerp(5f, 15f, firstChunk.vel.magnitude);
         }
-        this.soundLoop.Update();
-        this.lastPivotAtTip = this.pivotAtTip;
-        this.pivotAtTip = (base.mode == Weapon.Mode.Thrown || base.mode == Weapon.Mode.StuckInCreature);
-        if (this.addPoles && this.room.readyForAI)
+        soundLoop.Update();
+        lastPivotAtTip = pivotAtTip;
+        pivotAtTip = mode == Mode.Thrown || mode == Mode.StuckInCreature;
+        if (addPoles && room.readyForAI)
         {
-            if (base.abstractSpear.stuckInWallCycles >= 0)
+            if (abstractSpear.stuckInWallCycles >= 0)
             {
-                this.room.GetTile(this.stuckInWall.Value).horizontalBeam = true;
+                room.GetTile(stuckInWall.Value).horizontalBeam = true;
                 for (int i = -1; i < 2; i += 2)
                 {
-                    if (!this.room.GetTile(this.stuckInWall.Value + new Vector2(20f * (float)i, 0f)).Solid)
+                    if (!room.GetTile(stuckInWall.Value + new Vector2(20f * i, 0f)).Solid)
                     {
-                        this.room.GetTile(this.stuckInWall.Value + new Vector2(20f * (float)i, 0f)).horizontalBeam = true;
+                        room.GetTile(stuckInWall.Value + new Vector2(20f * i, 0f)).horizontalBeam = true;
                     }
                 }
             }
             else
             {
-                this.room.GetTile(this.stuckInWall.Value).verticalBeam = true;
+                room.GetTile(stuckInWall.Value).verticalBeam = true;
                 for (int j = -1; j < 2; j += 2)
                 {
-                    if (!this.room.GetTile(this.stuckInWall.Value + new Vector2(0f, 20f * (float)j)).Solid)
+                    if (!room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * j)).Solid)
                     {
-                        this.room.GetTile(this.stuckInWall.Value + new Vector2(0f, 20f * (float)j)).verticalBeam = true;
+                        room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * j)).verticalBeam = true;
                     }
                 }
             }
-            this.addPoles = false;
+            addPoles = false;
         }
-        switch (base.mode)
+        switch (mode)
         {
-            case Weapon.Mode.Free:
+            case Mode.Free:
                 {
-                    if (this.spinning)
+                    if (spinning)
                     {
-                        if (Custom.DistLess(base.firstChunk.pos, base.firstChunk.lastPos, 4f * this.room.gravity))
+                        if (Custom.DistLess(firstChunk.pos, firstChunk.lastPos, 4f * room.gravity))
                         {
-                            this.stillCounter++;
+                            stillCounter++;
                         }
                         else
                         {
-                            this.stillCounter = 0;
+                            stillCounter = 0;
                         }
-                        if (base.firstChunk.ContactPoint.y < 0 || this.stillCounter > 20)
+                        if (firstChunk.ContactPoint.y < 0 || stillCounter > 20)
                         {
-                            this.spinning = false;
-                            this.rotationSpeed = 0f;
-                            this.rotation = Custom.DegToVec(Mathf.Lerp(-50f, 50f, Random.value) + 180f);
-                            base.firstChunk.vel *= 0f;
-                            this.room.PlaySound(SoundID.Spear_Stick_In_Ground, base.firstChunk);
+                            spinning = false;
+                            rotationSpeed = 0f;
+                            rotation = Custom.DegToVec(Mathf.Lerp(-50f, 50f, Random.value) + 180f);
+                            firstChunk.vel *= 0f;
+                            room.PlaySound(SoundID.Spear_Stick_In_Ground, firstChunk);
                         }
                     }
                     else
                     {
-                        if (!Custom.DistLess(base.firstChunk.lastPos, base.firstChunk.pos, 6f))
+                        if (!Custom.DistLess(firstChunk.lastPos, firstChunk.pos, 6f))
                         {
-                            this.SetRandomSpin();
+                            SetRandomSpin();
                         }
                     }
                     break;
                 }
-            case Weapon.Mode.Thrown:
+            case Mode.Thrown:
                 {
-                    if (Custom.DistLess(this.thrownPos, base.firstChunk.pos, 560f * Mathf.Max(1f, this.spearDamageBonus)) && base.firstChunk.ContactPoint == this.throwDir && this.room.GetTile(base.firstChunk.pos).Terrain == Room.Tile.TerrainType.Air && this.room.GetTile(base.firstChunk.pos + this.throwDir.ToVector2() * 20f).Terrain == Room.Tile.TerrainType.Solid && (Random.value < 0.33f || Custom.DistLess(this.thrownPos, base.firstChunk.pos, 140f) || this.alwaysStickInWalls))
+                    if (Custom.DistLess(thrownPos, firstChunk.pos, 560f * Mathf.Max(1f, spearDamageBonus)) && firstChunk.ContactPoint == throwDir && room.GetTile(firstChunk.pos).Terrain == Room.Tile.TerrainType.Air && room.GetTile(firstChunk.pos + throwDir.ToVector2() * 20f).Terrain == Room.Tile.TerrainType.Solid && (Random.value < 0.33f || Custom.DistLess(thrownPos, firstChunk.pos, 140f) || alwaysStickInWalls))
                     {
                         bool flag13 = true;
-                        foreach (AbstractWorldEntity abstractWorldEntity in this.room.abstractRoom.entities)
+                        foreach (AbstractWorldEntity abstractWorldEntity in room.abstractRoom.entities)
                         {
-                            if (abstractWorldEntity is AbstractSpear && (abstractWorldEntity as AbstractSpear).realizedObject != null && ((abstractWorldEntity as AbstractSpear).realizedObject as Weapon).mode == Weapon.Mode.StuckInWall && abstractWorldEntity.pos.Tile == this.abstractPhysicalObject.pos.Tile)
+                            if (abstractWorldEntity is AbstractSpear && (abstractWorldEntity as AbstractSpear).realizedObject != null && ((abstractWorldEntity as AbstractSpear).realizedObject as Weapon).mode == Mode.StuckInWall && abstractWorldEntity.pos.Tile == abstractPhysicalObject.pos.Tile)
                             {
                                 flag13 = false;
                                 break;
@@ -391,9 +391,9 @@ public class ElectricSpear : Spear
                         }
                         if (flag13)
                         {
-                            for (int k = 0; k < this.room.roomSettings.placedObjects.Count; k++)
+                            for (int k = 0; k < room.roomSettings.placedObjects.Count; k++)
                             {
-                                if (this.room.roomSettings.placedObjects[k].type == PlacedObject.Type.NoSpearStickZone && Custom.DistLess(this.room.MiddleOfTile(base.firstChunk.pos), this.room.roomSettings.placedObjects[k].pos, (this.room.roomSettings.placedObjects[k].data as PlacedObject.ResizableObjectData).Rad))
+                                if (room.roomSettings.placedObjects[k].type == PlacedObject.Type.NoSpearStickZone && Custom.DistLess(room.MiddleOfTile(firstChunk.pos), room.roomSettings.placedObjects[k].pos, (room.roomSettings.placedObjects[k].data as PlacedObject.ResizableObjectData).Rad))
                                 {
                                     flag13 = false;
                                     break;
@@ -402,130 +402,130 @@ public class ElectricSpear : Spear
                         }
                         if (flag13)
                         {
-                            this.stuckInWall = new Vector2?(this.room.MiddleOfTile(base.firstChunk.pos));
-                            this.vibrate = 10;
-                            this.ChangeMode(Weapon.Mode.StuckInWall);
-                            this.room.PlaySound(SoundID.Spear_Stick_In_Wall, base.firstChunk);
-                            base.firstChunk.collideWithTerrain = false;
+                            stuckInWall = new Vector2?(room.MiddleOfTile(firstChunk.pos));
+                            vibrate = 10;
+                            ChangeMode(Mode.StuckInWall);
+                            room.PlaySound(SoundID.Spear_Stick_In_Wall, firstChunk);
+                            firstChunk.collideWithTerrain = false;
                         }
                     }
                     break;
                 }
-            case Weapon.Mode.StuckInCreature:
+            case Mode.StuckInCreature:
                 {
-                    if (this.stuckInWall == null)
+                    if (stuckInWall == null)
                     {
-                        if (this.stuckInAppendage != null)
+                        if (stuckInAppendage != null)
                         {
-                            this.setRotation = new Vector2?(Custom.DegToVec(this.stuckRotation + Custom.VecToDeg(this.stuckInAppendage.appendage.OnAppendageDirection(this.stuckInAppendage))));
-                            base.firstChunk.pos = this.stuckInAppendage.appendage.OnAppendagePosition(this.stuckInAppendage);
+                            setRotation = new Vector2?(Custom.DegToVec(stuckRotation + Custom.VecToDeg(stuckInAppendage.appendage.OnAppendageDirection(stuckInAppendage))));
+                            firstChunk.pos = stuckInAppendage.appendage.OnAppendagePosition(stuckInAppendage);
                         }
                         else
                         {
-                            if (this.depleted)
+                            if (depleted)
                             {
-                                if (this.lightSource != null)
+                                if (lightSource != null)
                                 {
-                                    this.lightSource.stayAlive = true;
-                                    this.lightSource.setPos = new Vector2?(base.firstChunk.pos);
-                                    this.lightSource.setRad = new float?(300f * Mathf.Pow(this.lightFlash * Random.value, 0.01f) * Mathf.Lerp(0.5f, 2f, 0.8f) - 1.3f);
-                                    this.lightSource.setAlpha = new float?(Mathf.Pow(this.lightFlash * Random.value, 0.01f) - 0.8f);
-                                    float num = this.lightFlash * Random.value;
-                                    num = Mathf.Lerp(num, 1f, 0.5f * (1f - this.room.Darkness(base.firstChunk.pos)));
-                                    this.lightSource.color = new Color(num, num, 1.5f);
-                                    if (this.lightFlash <= 0f)
+                                    lightSource.stayAlive = true;
+                                    lightSource.setPos = new Vector2?(firstChunk.pos);
+                                    lightSource.setRad = new float?(300f * Mathf.Pow(lightFlash * Random.value, 0.01f) * Mathf.Lerp(0.5f, 2f, 0.8f) - 1.3f);
+                                    lightSource.setAlpha = new float?(Mathf.Pow(lightFlash * Random.value, 0.01f) - 0.8f);
+                                    float num = lightFlash * Random.value;
+                                    num = Mathf.Lerp(num, 1f, 0.5f * (1f - room.Darkness(firstChunk.pos)));
+                                    lightSource.color = new Color(num, num, 1.5f);
+                                    if (lightFlash <= 0f)
                                     {
-                                        this.lightSource.Destroy();
+                                        lightSource.Destroy();
                                     }
-                                    if (this.lightSource.slatedForDeletetion)
+                                    if (lightSource.slatedForDeletetion)
                                     {
-                                        if (this.depleted)
+                                        if (depleted)
                                         {
-                                            this.depleted = false;
+                                            depleted = false;
                                         }
-                                        this.lightSource = null;
+                                        lightSource = null;
                                     }
                                 }
                                 else
                                 {
-                                    if (this.lightFlash > 0f)
+                                    if (lightFlash > 0f)
                                     {
-                                        this.lightSource = new LightSource(base.firstChunk.pos, false, new Color(1f, 1f, 1f), this);
-                                        this.lightSource.affectedByPaletteDarkness = 0f;
-                                        this.lightSource.requireUpKeep = true;
-                                        this.room.AddObject(this.lightSource);
+                                        lightSource = new LightSource(firstChunk.pos, false, new Color(1f, 1f, 1f), this);
+                                        lightSource.affectedByPaletteDarkness = 0f;
+                                        lightSource.requireUpKeep = true;
+                                        room.AddObject(lightSource);
                                     }
                                 }
-                                if (this.lightFlash > 0f)
+                                if (lightFlash > 0f)
                                 {
-                                    this.lightFlash = Mathf.Max(0f, this.lightFlash - 0.0333933346f);
+                                    lightFlash = Mathf.Max(0f, lightFlash - 0.0333933346f);
                                 }
                             }
-                            base.firstChunk.vel = this.stuckInChunk.vel;
-                            if (this.stuckBodyPart == -1 || !this.room.BeingViewed || (this.stuckInChunk.owner as Creature).BodyPartByIndex(this.stuckBodyPart) == null)
+                            firstChunk.vel = stuckInChunk.vel;
+                            if (stuckBodyPart == -1 || !room.BeingViewed || (stuckInChunk.owner as Creature).BodyPartByIndex(stuckBodyPart) == null)
                             {
-                                this.setRotation = new Vector2?(Custom.DegToVec(this.stuckRotation + Custom.VecToDeg(this.stuckInChunk.Rotation)));
-                                base.firstChunk.MoveWithOtherObject(eu, this.stuckInChunk, new Vector2(0f, 0f));
+                                setRotation = new Vector2?(Custom.DegToVec(stuckRotation + Custom.VecToDeg(stuckInChunk.Rotation)));
+                                firstChunk.MoveWithOtherObject(eu, stuckInChunk, new Vector2(0f, 0f));
                             }
                             else
                             {
-                                this.setRotation = new Vector2?(Custom.DegToVec(this.stuckRotation + Custom.AimFromOneVectorToAnother(this.stuckInChunk.pos, (this.stuckInChunk.owner as Creature).BodyPartByIndex(this.stuckBodyPart).pos)));
-                                base.firstChunk.MoveWithOtherObject(eu, this.stuckInChunk, Vector2.Lerp(this.stuckInChunk.pos, (this.stuckInChunk.owner as Creature).BodyPartByIndex(this.stuckBodyPart).pos, 0.5f) - this.stuckInChunk.pos);
+                                setRotation = new Vector2?(Custom.DegToVec(stuckRotation + Custom.AimFromOneVectorToAnother(stuckInChunk.pos, (stuckInChunk.owner as Creature).BodyPartByIndex(stuckBodyPart).pos)));
+                                firstChunk.MoveWithOtherObject(eu, stuckInChunk, Vector2.Lerp(stuckInChunk.pos, (stuckInChunk.owner as Creature).BodyPartByIndex(stuckBodyPart).pos, 0.5f) - stuckInChunk.pos);
                             }
                         }
                     }
                     else
                     {
-                        if (this.pinToWallCounter > 0)
+                        if (pinToWallCounter > 0)
                         {
-                            this.pinToWallCounter--;
+                            pinToWallCounter--;
                         }
-                        if (this.stuckInChunk.vel.magnitude * this.stuckInChunk.mass > Custom.LerpMap((float)this.pinToWallCounter, 160f, 0f, 7f, 2f))
+                        if (stuckInChunk.vel.magnitude * stuckInChunk.mass > Custom.LerpMap(pinToWallCounter, 160f, 0f, 7f, 2f))
                         {
-                            this.setRotation = new Vector2?((Custom.DegToVec(this.stuckRotation) + Vector2.ClampMagnitude(this.stuckInChunk.vel * this.stuckInChunk.mass * 0.005f, 0.1f)).normalized);
-                        }
-                        else
-                        {
-                            this.setRotation = new Vector2?(Custom.DegToVec(this.stuckRotation));
-                        }
-                        base.firstChunk.vel *= 0f;
-                        base.firstChunk.pos = this.stuckInWall.Value;
-                        if ((this.stuckInChunk.owner is Creature && (this.stuckInChunk.owner as Creature).enteringShortCut != null) || (this.pinToWallCounter < 160 && Random.value < 0.025f && this.stuckInChunk.vel.magnitude > Custom.LerpMap((float)this.pinToWallCounter, 160f, 0f, 140f, 30f / (1f + this.stuckInChunk.owner.TotalMass * 0.2f))))
-                        {
-                            this.stuckRotation = Custom.Angle(this.setRotation.Value, this.stuckInChunk.Rotation);
-                            this.stuckInWall = default(Vector2?);
+                            setRotation = new Vector2?((Custom.DegToVec(stuckRotation) + Vector2.ClampMagnitude(stuckInChunk.vel * stuckInChunk.mass * 0.005f, 0.1f)).normalized);
                         }
                         else
                         {
-                            this.stuckInChunk.MoveFromOutsideMyUpdate(eu, this.stuckInWall.Value);
-                            this.stuckInChunk.vel *= 0f;
+                            setRotation = new Vector2?(Custom.DegToVec(stuckRotation));
+                        }
+                        firstChunk.vel *= 0f;
+                        firstChunk.pos = stuckInWall.Value;
+                        if (stuckInChunk.owner is Creature && (stuckInChunk.owner as Creature).enteringShortCut != null || pinToWallCounter < 160 && Random.value < 0.025f && stuckInChunk.vel.magnitude > Custom.LerpMap(pinToWallCounter, 160f, 0f, 140f, 30f / (1f + stuckInChunk.owner.TotalMass * 0.2f)))
+                        {
+                            stuckRotation = Custom.Angle(setRotation.Value, stuckInChunk.Rotation);
+                            stuckInWall = default;
+                        }
+                        else
+                        {
+                            stuckInChunk.MoveFromOutsideMyUpdate(eu, stuckInWall.Value);
+                            stuckInChunk.vel *= 0f;
                         }
                     }
-                    if (this.stuckInChunk.owner.slatedForDeletetion)
+                    if (stuckInChunk.owner.slatedForDeletetion)
                     {
-                        this.ChangeMode(Weapon.Mode.Free);
+                        ChangeMode(Mode.Free);
                     }
                     break;
                 }
-            case Weapon.Mode.StuckInWall:
-                base.firstChunk.pos = this.stuckInWall.Value;
-                base.firstChunk.vel *= 0f;
+            case Mode.StuckInWall:
+                firstChunk.pos = stuckInWall.Value;
+                firstChunk.vel *= 0f;
                 break;
         }
-        for (int l = this.abstractPhysicalObject.stuckObjects.Count - 1; l >= 0; l--)
+        for (int l = abstractPhysicalObject.stuckObjects.Count - 1; l >= 0; l--)
         {
-            if (this.abstractPhysicalObject.stuckObjects[l] is AbstractPhysicalObject.ImpaledOnSpearStick)
+            if (abstractPhysicalObject.stuckObjects[l] is AbstractPhysicalObject.ImpaledOnSpearStick)
             {
-                if (this.abstractPhysicalObject.stuckObjects[l].B.realizedObject != null && (this.abstractPhysicalObject.stuckObjects[l].B.realizedObject.slatedForDeletetion || this.abstractPhysicalObject.stuckObjects[l].B.realizedObject.grabbedBy.Count > 0))
+                if (abstractPhysicalObject.stuckObjects[l].B.realizedObject != null && (abstractPhysicalObject.stuckObjects[l].B.realizedObject.slatedForDeletetion || abstractPhysicalObject.stuckObjects[l].B.realizedObject.grabbedBy.Count > 0))
                 {
-                    this.abstractPhysicalObject.stuckObjects[l].Deactivate();
+                    abstractPhysicalObject.stuckObjects[l].Deactivate();
                 }
                 else
                 {
-                    if (this.abstractPhysicalObject.stuckObjects[l].B.realizedObject != null && this.abstractPhysicalObject.stuckObjects[l].B.realizedObject.room == this.room)
+                    if (abstractPhysicalObject.stuckObjects[l].B.realizedObject != null && abstractPhysicalObject.stuckObjects[l].B.realizedObject.room == room)
                     {
-                        this.abstractPhysicalObject.stuckObjects[l].B.realizedObject.firstChunk.MoveFromOutsideMyUpdate(eu, base.firstChunk.pos + this.rotation * Custom.LerpMap((float)(this.abstractPhysicalObject.stuckObjects[l] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition, 0f, 4f, 15f, -15f));
-                        this.abstractPhysicalObject.stuckObjects[l].B.realizedObject.firstChunk.vel *= 0f;
+                        abstractPhysicalObject.stuckObjects[l].B.realizedObject.firstChunk.MoveFromOutsideMyUpdate(eu, firstChunk.pos + rotation * Custom.LerpMap((abstractPhysicalObject.stuckObjects[l] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition, 0f, 4f, 15f, -15f));
+                        abstractPhysicalObject.stuckObjects[l].B.realizedObject.firstChunk.vel *= 0f;
                     }
                 }
             }
@@ -535,62 +535,62 @@ public class ElectricSpear : Spear
     public override void PlaceInRoom(Room placeRoom)
     {
         base.PlaceInRoom(placeRoom);
-        if (base.abstractSpear.stuckInWall)
+        if (abstractSpear.stuckInWall)
         {
-            this.stuckInWall = new Vector2?(placeRoom.MiddleOfTile(this.abstractPhysicalObject.pos.Tile));
-            this.ChangeMode(Weapon.Mode.StuckInWall);
+            stuckInWall = new Vector2?(placeRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile));
+            ChangeMode(Mode.StuckInWall);
         }
     }
 
-    public override void ChangeMode(Weapon.Mode newMode)
+    public override void ChangeMode(Mode newMode)
     {
-        if (base.mode == Weapon.Mode.StuckInCreature)
+        if (mode == Mode.StuckInCreature)
         {
-            if (this.room != null)
+            if (room != null)
             {
-                this.room.PlaySound(SoundID.Spear_Dislodged_From_Creature, base.firstChunk);
+                room.PlaySound(SoundID.Spear_Dislodged_From_Creature, firstChunk);
             }
-            this.PulledOutOfStuckObject();
-            base.ChangeOverlap(true);
+            PulledOutOfStuckObject();
+            ChangeOverlap(true);
         }
         else
         {
-            if (newMode == Weapon.Mode.StuckInCreature)
+            if (newMode == Mode.StuckInCreature)
             {
-                base.ChangeOverlap(false);
+                ChangeOverlap(false);
             }
         }
-        if (newMode != Weapon.Mode.Thrown)
+        if (newMode != Mode.Thrown)
         {
-            this.spearDamageBonus = 1f;
+            spearDamageBonus = 1f;
         }
-        if (newMode == Weapon.Mode.StuckInWall)
+        if (newMode == Mode.StuckInWall)
         {
-            if (base.abstractSpear.stuckInWallCycles == 0)
+            if (abstractSpear.stuckInWallCycles == 0)
             {
-                base.abstractSpear.stuckInWallCycles = Random.Range(3, 7) * ((this.throwDir.y == 0) ? 1 : -1);
+                abstractSpear.stuckInWallCycles = Random.Range(3, 7) * (throwDir.y == 0 ? 1 : -1);
             }
             for (int i = -1; i < 2; i += 2)
             {
-                if ((base.abstractSpear.stuckInWallCycles >= 0 && !this.room.GetTile(this.stuckInWall.Value + new Vector2(20f * (float)i, 0f)).Solid) || (base.abstractSpear.stuckInWallCycles < 0 && !this.room.GetTile(this.stuckInWall.Value + new Vector2(0f, 20f * (float)i)).Solid))
+                if (abstractSpear.stuckInWallCycles >= 0 && !room.GetTile(stuckInWall.Value + new Vector2(20f * i, 0f)).Solid || abstractSpear.stuckInWallCycles < 0 && !room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * i)).Solid)
                 {
-                    this.setRotation = new Vector2?((base.abstractSpear.stuckInWallCycles < 0) ? new Vector2(0f, -(float)i) : new Vector2(-(float)i, 0f));
+                    setRotation = new Vector2?(abstractSpear.stuckInWallCycles < 0 ? new Vector2(0f, -i) : new Vector2(-i, 0f));
                     break;
                 }
             }
-            if (this.setRotation != null)
+            if (setRotation != null)
             {
-                this.stuckInWall = new Vector2?(this.room.MiddleOfTile(this.stuckInWall.Value) - this.setRotation.Value * 5f);
+                stuckInWall = new Vector2?(room.MiddleOfTile(stuckInWall.Value) - setRotation.Value * 5f);
             }
-            this.rotationSpeed = 0f;
+            rotationSpeed = 0f;
         }
-        if (newMode > Weapon.Mode.Free)
+        if (newMode > Mode.Free)
         {
-            this.spinning = false;
+            spinning = false;
         }
-        if (newMode != Weapon.Mode.StuckInWall && newMode != Weapon.Mode.StuckInCreature)
+        if (newMode != Mode.StuckInWall && newMode != Mode.StuckInCreature)
         {
-            this.stuckInWall = default(Vector2?);
+            stuckInWall = default;
         }
         base.ChangeMode(newMode);
     }
@@ -598,52 +598,52 @@ public class ElectricSpear : Spear
     public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
     {
         base.Thrown(thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
-        this.room.PlaySound(SoundID.Slugcat_Throw_Spear, base.firstChunk);
-        this.alwaysStickInWalls = false;
+        room.PlaySound(SoundID.Slugcat_Throw_Spear, firstChunk);
+        alwaysStickInWalls = false;
     }
 
     private new void LodgeInCreature(SharedPhysics.CollisionResult result, bool eu)
     {
-        this.stuckInObject = result.obj;
-        this.ChangeMode(Weapon.Mode.StuckInCreature);
+        stuckInObject = result.obj;
+        ChangeMode(Mode.StuckInCreature);
         if (result.chunk != null)
         {
-            this.stuckInChunkIndex = result.chunk.index;
-            if (this.spearDamageBonus > 0.9f && this.room.GetTile(this.room.GetTilePosition(this.stuckInChunk.pos) + this.throwDir).Terrain == Room.Tile.TerrainType.Solid && this.room.GetTile(this.stuckInChunk.pos).Terrain == Room.Tile.TerrainType.Air)
+            stuckInChunkIndex = result.chunk.index;
+            if (spearDamageBonus > 0.9f && room.GetTile(room.GetTilePosition(stuckInChunk.pos) + throwDir).Terrain == Room.Tile.TerrainType.Solid && room.GetTile(stuckInChunk.pos).Terrain == Room.Tile.TerrainType.Air)
             {
-                this.stuckInWall = new Vector2?(this.room.MiddleOfTile(this.stuckInChunk.pos) + this.throwDir.ToVector2() * (10f - this.stuckInChunk.rad));
-                this.stuckInChunk.MoveFromOutsideMyUpdate(eu, this.stuckInWall.Value);
-                this.stuckRotation = Custom.VecToDeg(this.rotation);
-                this.stuckBodyPart = -1;
-                this.pinToWallCounter = 300;
+                stuckInWall = new Vector2?(room.MiddleOfTile(stuckInChunk.pos) + throwDir.ToVector2() * (10f - stuckInChunk.rad));
+                stuckInChunk.MoveFromOutsideMyUpdate(eu, stuckInWall.Value);
+                stuckRotation = Custom.VecToDeg(rotation);
+                stuckBodyPart = -1;
+                pinToWallCounter = 300;
             }
             else
             {
-                if (this.stuckBodyPart == -1)
+                if (stuckBodyPart == -1)
                 {
-                    this.stuckRotation = Custom.Angle(this.throwDir.ToVector2(), this.stuckInChunk.Rotation);
+                    stuckRotation = Custom.Angle(throwDir.ToVector2(), stuckInChunk.Rotation);
                 }
             }
-            base.firstChunk.MoveWithOtherObject(eu, this.stuckInChunk, new Vector2(0f, 0f));
-            Debug.Log("Add electric spear to creature chunk " + this.stuckInChunk.index);
-            new AbstractPhysicalObject.AbstractSpearStick(this.abstractPhysicalObject, (result.obj as Creature).abstractCreature, this.stuckInChunkIndex, this.stuckBodyPart, this.stuckRotation);
+            firstChunk.MoveWithOtherObject(eu, stuckInChunk, new Vector2(0f, 0f));
+            Debug.Log("Add electric spear to creature chunk " + stuckInChunk.index);
+            new AbstractPhysicalObject.AbstractSpearStick(abstractPhysicalObject, (result.obj as Creature).abstractCreature, stuckInChunkIndex, stuckBodyPart, stuckRotation);
         }
         else
         {
             if (result.onAppendagePos != null)
             {
-                this.stuckInChunkIndex = 0;
-                this.stuckInAppendage = result.onAppendagePos;
-                this.stuckRotation = Custom.VecToDeg(this.rotation) - Custom.VecToDeg(this.stuckInAppendage.appendage.OnAppendageDirection(this.stuckInAppendage));
+                stuckInChunkIndex = 0;
+                stuckInAppendage = result.onAppendagePos;
+                stuckRotation = Custom.VecToDeg(rotation) - Custom.VecToDeg(stuckInAppendage.appendage.OnAppendageDirection(stuckInAppendage));
                 Debug.Log("Add electric spear to creature Appendage");
-                new AbstractPhysicalObject.AbstractSpearAppendageStick(this.abstractPhysicalObject, (result.obj as Creature).abstractCreature, result.onAppendagePos.appendage.appIndex, result.onAppendagePos.prevSegment, result.onAppendagePos.distanceToNext, this.stuckRotation);
+                new AbstractPhysicalObject.AbstractSpearAppendageStick(abstractPhysicalObject, (result.obj as Creature).abstractCreature, result.onAppendagePos.appendage.appIndex, result.onAppendagePos.prevSegment, result.onAppendagePos.distanceToNext, stuckRotation);
             }
         }
-        if (this.room.BeingViewed)
+        if (room.BeingViewed)
         {
             for (int i = 0; i < 8; i++)
             {
-                this.room.AddObject(new WaterDrip(result.collisionPoint, -base.firstChunk.vel * Random.value * 0.5f + Custom.DegToVec(360f * Random.value) * base.firstChunk.vel.magnitude * Random.value * 0.5f, false));
+                room.AddObject(new WaterDrip(result.collisionPoint, -firstChunk.vel * Random.value * 0.5f + Custom.DegToVec(360f * Random.value) * firstChunk.vel.magnitude * Random.value * 0.5f, false));
             }
         }
     }
@@ -652,11 +652,11 @@ public class ElectricSpear : Spear
     {
         int num = 0;
         int num2 = 0;
-        for (int i = 0; i < this.abstractPhysicalObject.stuckObjects.Count; i++)
+        for (int i = 0; i < abstractPhysicalObject.stuckObjects.Count; i++)
         {
-            if (this.abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.ImpaledOnSpearStick)
+            if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.ImpaledOnSpearStick)
             {
-                if ((this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition == num2)
+                if ((abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition == num2)
                 {
                     num2++;
                 }
@@ -665,77 +665,77 @@ public class ElectricSpear : Spear
         }
         if (!(num > 5 || num2 >= 5))
         {
-            new AbstractPhysicalObject.ImpaledOnSpearStick(this.abstractPhysicalObject, smallCrit.abstractCreature, 0, num2);
+            new AbstractPhysicalObject.ImpaledOnSpearStick(abstractPhysicalObject, smallCrit.abstractCreature, 0, num2);
         }
     }
 
     public override void SetRandomSpin()
     {
-        if (this.room != null)
+        if (room != null)
         {
-            this.rotationSpeed = ((Random.value >= 0.5f) ? 1f : -1f) * Mathf.Lerp(50f, 150f, Random.value) * Mathf.Lerp(0.05f, 1f, this.room.gravity);
+            rotationSpeed = (Random.value >= 0.5f ? 1f : -1f) * Mathf.Lerp(50f, 150f, Random.value) * Mathf.Lerp(0.05f, 1f, room.gravity);
         }
-        this.spinning = true;
+        spinning = true;
     }
 
     public new void ProvideRotationBodyPart(BodyChunk chunk, BodyPart bodyPart)
     {
-        this.stuckBodyPart = bodyPart.bodyPartArrayIndex;
-        this.stuckRotation = Custom.Angle(base.firstChunk.vel, (bodyPart.pos - chunk.pos).normalized);
-        bodyPart.vel += base.firstChunk.vel;
+        stuckBodyPart = bodyPart.bodyPartArrayIndex;
+        stuckRotation = Custom.Angle(firstChunk.vel, (bodyPart.pos - chunk.pos).normalized);
+        bodyPart.vel += firstChunk.vel;
     }
 
-    public override void HitSomethingWithoutStopping(PhysicalObject obj, BodyChunk chunk, PhysicalObject.Appendage appendage)
+    public override void HitSomethingWithoutStopping(PhysicalObject obj, BodyChunk chunk, Appendage appendage)
     {
         base.HitSomethingWithoutStopping(obj, chunk, appendage);
         if (obj is Fly)
         {
-            this.TryImpaleSmallCreature(obj as Creature);
+            TryImpaleSmallCreature(obj as Creature);
         }
     }
 
     public new void PulledOutOfStuckObject()
     {
-        for (int i = 0; i < this.abstractPhysicalObject.stuckObjects.Count; i++)
+        for (int i = 0; i < abstractPhysicalObject.stuckObjects.Count; i++)
         {
-            if (this.abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearStick && (this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).Spear == this.abstractPhysicalObject)
+            if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).Spear == abstractPhysicalObject)
             {
-                this.abstractPhysicalObject.stuckObjects[i].Deactivate();
+                abstractPhysicalObject.stuckObjects[i].Deactivate();
                 break;
             }
-            if (this.abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearAppendageStick && (this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).Spear == this.abstractPhysicalObject)
+            if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearAppendageStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).Spear == abstractPhysicalObject)
             {
-                this.abstractPhysicalObject.stuckObjects[i].Deactivate();
+                abstractPhysicalObject.stuckObjects[i].Deactivate();
                 break;
             }
         }
-        this.stuckInObject = null;
-        this.stuckInAppendage = null;
-        this.stuckInChunkIndex = 0;
+        stuckInObject = null;
+        stuckInAppendage = null;
+        stuckInChunkIndex = 0;
     }
 
     public override void RecreateSticksFromAbstract()
     {
-        for (int i = 0; i < this.abstractPhysicalObject.stuckObjects.Count; i++)
+        for (int i = 0; i < abstractPhysicalObject.stuckObjects.Count; i++)
         {
-            if (this.abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearStick && (this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).Spear == this.abstractPhysicalObject && (this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).LodgedIn.realizedObject != null)
+            if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).Spear == abstractPhysicalObject && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).LodgedIn.realizedObject != null)
             {
-                AbstractPhysicalObject.AbstractSpearStick abstractSpearStick = this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick;
-                this.stuckInObject = abstractSpearStick.LodgedIn.realizedObject;
-                this.stuckInChunkIndex = abstractSpearStick.chunk;
-                this.stuckBodyPart = abstractSpearStick.bodyPart;
-                this.stuckRotation = abstractSpearStick.angle;
-                this.ChangeMode(Weapon.Mode.StuckInCreature);
+                AbstractPhysicalObject.AbstractSpearStick abstractSpearStick = abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick;
+                stuckInObject = abstractSpearStick.LodgedIn.realizedObject;
+                stuckInChunkIndex = abstractSpearStick.chunk;
+                stuckBodyPart = abstractSpearStick.bodyPart;
+                stuckRotation = abstractSpearStick.angle;
+                ChangeMode(Mode.StuckInCreature);
             }
             else
             {
-                if (this.abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearAppendageStick && (this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).Spear == this.abstractPhysicalObject && (this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).LodgedIn.realizedObject != null)
+                if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearAppendageStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).Spear == abstractPhysicalObject && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).LodgedIn.realizedObject != null)
                 {
-                    AbstractPhysicalObject.AbstractSpearAppendageStick abstractSpearAppendageStick = this.abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick;
-                    this.stuckInObject = abstractSpearAppendageStick.LodgedIn.realizedObject;
-                    this.stuckInAppendage = new PhysicalObject.Appendage.Pos(this.stuckInObject.appendages[abstractSpearAppendageStick.appendage], abstractSpearAppendageStick.prevSeg, abstractSpearAppendageStick.distanceToNext);
-                    this.stuckRotation = abstractSpearAppendageStick.angle;
-                    this.ChangeMode(Weapon.Mode.StuckInCreature);
+                    AbstractPhysicalObject.AbstractSpearAppendageStick abstractSpearAppendageStick = abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick;
+                    stuckInObject = abstractSpearAppendageStick.LodgedIn.realizedObject;
+                    stuckInAppendage = new Appendage.Pos(stuckInObject.appendages[abstractSpearAppendageStick.appendage], abstractSpearAppendageStick.prevSeg, abstractSpearAppendageStick.distanceToNext);
+                    stuckRotation = abstractSpearAppendageStick.angle;
+                    ChangeMode(Mode.StuckInCreature);
                 }
             }
         }

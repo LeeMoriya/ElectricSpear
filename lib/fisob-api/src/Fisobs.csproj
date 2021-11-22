@@ -7,21 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="EnumExtender">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\EnumExtender.dll</HintPath>
-    </Reference>
-    <Reference Include="HOOKS-Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\HOOKS-Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Partiality">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\BepInEx\plugins\PartialityWrapper\Partiality.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World - Backup\Mods\UnityEngine.dll</HintPath>
-    </Reference>
+    <Reference Include="$(References)/UnityEngine.dll" />
+    <Reference Include="$(References)/Assembly-CSharp.dll" />
+    <Reference Include="$(References)/HOOKS-Assembly-CSharp.dll" />
+    <Reference Include="$(References)/EnumExtender.dll" />
   </ItemGroup>
 
 </Project>

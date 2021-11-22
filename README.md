@@ -14,7 +14,7 @@ This mod requires [EnumExtender](https://beestuff.pythonanywhere.com/audb/api/mo
 This mod supports [AutoUpdate](https://beestuff.pythonanywhere.com/audb/api/mods/0/0/download/latest)
 
 ## Download
-[Download ElectricSpear v1.0](https://github.com/LeeMoriya/ElectricSpear/releases/tag/v1.0)
+[Download ElectricSpear v1.01](https://github.com/LeeMoriya/ElectricSpear/releases/tag/v1.01)
 
 ## Credits
 Shiro_PB for creating the original version of Electric Spear

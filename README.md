@@ -6,6 +6,8 @@ The spears are highly coveted by the Scavengers and can be found in their hidden
 
 The spear is also unlocked by default in Sandbox mode.
 
+Create a text file called 'recharge' in your Rain World folder to make Electric Spears regain their charges when stored in shelters.
+
 ## Requirements
 This mod requires [EnumExtender](https://beestuff.pythonanywhere.com/audb/api/mods/0/1/download/latest)
 

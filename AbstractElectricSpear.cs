@@ -11,14 +11,7 @@ public class AbstractElectricSpear : AbstractSpear
     public AbstractElectricSpear(World world, ElectricSpear realizedObject, WorldCoordinate pos, EntityID ID, int charge) : base(world, realizedObject, pos, ID, false)
     {
         this.type = ElectricSpearFisob.Instance.Type;
-        if (this.Room.shelter && ElectricSpearPlugin.recharge)
-        {
-            this.charge = 3;
-        }
-        else
-        {
-            this.charge = charge;
-        }
+        this.charge = charge;
     }
 
     public bool StuckInWall

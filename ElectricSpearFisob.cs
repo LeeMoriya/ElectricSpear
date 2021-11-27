@@ -9,23 +9,22 @@ public sealed class ElectricSpearFisob : Fisob
 {
     public static readonly ElectricSpearFisob Instance = new();
 
-    private ElectricSpearFisob() : base("electric_spear") 
-    { 
-        
+    private ElectricSpearFisob() : base("electric_spear")
+    {
+
     }
     private static readonly ElectricSpearProperties properties = new();
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData)
     {
         string[] p = saveData.CustomData.Split(';');
-        if(world.GetAbstractRoom(saveData.Pos).shelter && ElectricSpearPlugin.recharge)
+        if (ElectricSpearPlugin.recharge && world.game.IsStorySession && (world.GetAbstractRoom(saveData.Pos)?.shelter ?? false) && world.rainCycle.CycleProgression < 0.1f)
         {
             return new AbstractElectricSpear(world, null, saveData.Pos, saveData.ID, 3)
             {
                 charge = 3
             };
         }
-
         return new AbstractElectricSpear(world, null, saveData.Pos, saveData.ID, 3)
         {
             charge = int.TryParse(p[0], out var h) ? h : 3
